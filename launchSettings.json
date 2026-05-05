@@ -1,0 +1,14 @@
+{
+  "profiles": {
+    "Docker Compose": {
+      "commandName": "DockerCompose",
+      "commandVersion": "1.0",
+      "serviceActions": {
+        "dataprocessor.api": "StartDebugging",
+        "dataingestor": "StartDebugging",
+        "apigateway.api": "StartDebugging",
+        "notificationservice": "StartDebugging"
+      }
+    }
+  }
+}
