@@ -1,5 +1,6 @@
 
 
+using DataIngestor.BackgroundJobs;
 using DataIngestor.Configuration;
 using DataIngestor.Helpers;
 using Hangfire;
@@ -8,7 +9,11 @@ using Hangfire.PostgreSql;
 using MassTransit;
 using MassTransit.RetryPolicies;
 using Microsoft.Extensions.Options;
+using Polly;
+using Polly.Extensions.Http;
+using Polly.Timeout;
 using Serilog;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,15 +29,28 @@ builder.Host.UseSerilog((ctx, services, cfg) =>
         .WriteTo.Console();
 });
 
-builder.Services.AddHttpClient("unstable-api", (sp, http) =>
-{
-    var options = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<UnstableApiOptions>>().Value;
-    http.BaseAddress = new Uri(options.BaseUrl);
-    http.DefaultRequestHeaders.Add("X-Api-Key", options.ApiKey);
-});
-
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
+
+var jitter = new Random();
+var retryPolicy = HttpPolicyExtensions
+    .HandleTransientHttpError()
+    .Or<TimeoutRejectedException>()
+    .Or<TaskCanceledException>()
+    .Or<JsonException>()
+    .Or<HttpIOException>()
+    .WaitAndRetryAsync(
+        retryCount: 3,
+        sleepDurationProvider: attempt => TimeSpan.FromMilliseconds(200 * attempt + jitter.Next(0, 250)));
+var timeoutPolicy = Policy.TimeoutAsync<HttpResponseMessage>(TimeSpan.FromSeconds(15));
+
+builder.Services.AddHttpClient("unstable-api", (sp, http) =>
+{
+    var options = sp.GetRequiredService<IOptions<UnstableApiOptions>>().Value;
+    http.BaseAddress = new Uri(options.BaseUrl);
+    http.DefaultRequestHeaders.Add("X-Api-Key", options.ApiKey);
+}).AddPolicyHandler(retryPolicy)
+  .AddPolicyHandler(timeoutPolicy);
 
 builder.Services.AddHangfire(config =>
 {
@@ -56,6 +74,8 @@ builder.Services.AddMassTransit(x =>
     });
 });
 
+builder.Services.AddScoped<TelemetryFetchJob>();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -63,13 +83,15 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
+app.UseSerilogRequestLogging();
+
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
-
 app.MapControllers();
 
+app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
 
 app.UseHangfireDashboard("/hangfire");
 
