@@ -40,7 +40,7 @@ public class TelemetryFetchJob
 
         try
         {
-            var httpClient = _httpClientFactory.CreateClient();
+            var httpClient = _httpClientFactory.CreateClient("unstable-api");
 
             var metrics = await httpClient.GetFromJsonAsync<List<UnstableMetricDto>>("/meters", new JsonSerializerOptions(JsonSerializerDefaults.Web));
 

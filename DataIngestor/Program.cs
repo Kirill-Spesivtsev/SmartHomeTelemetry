@@ -6,6 +6,7 @@ using Hangfire;
 using Hangfire.Dashboard;
 using Hangfire.PostgreSql;
 using MassTransit;
+using MassTransit.RetryPolicies;
 using Microsoft.Extensions.Options;
 using Serilog;
 
@@ -21,6 +22,13 @@ builder.Host.UseSerilog((ctx, services, cfg) =>
         .ReadFrom.Services(services)
         .Enrich.FromLogContext()
         .WriteTo.Console();
+});
+
+builder.Services.AddHttpClient("unstable-api", (sp, http) =>
+{
+    var options = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<UnstableApiOptions>>().Value;
+    http.BaseAddress = new Uri(options.BaseUrl);
+    http.DefaultRequestHeaders.Add("X-Api-Key", options.ApiKey);
 });
 
 builder.Services.AddControllers();
