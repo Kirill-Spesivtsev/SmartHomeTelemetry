@@ -1,6 +1,8 @@
 
 
 using DataIngestor.Configuration;
+using Hangfire;
+using Hangfire.PostgreSql;
 using MassTransit;
 using Microsoft.Extensions.Options;
 using Serilog;
@@ -17,6 +19,14 @@ builder.Host.UseSerilog((ctx, services, cfg) =>
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
+
+builder.Services.AddHangfire(config =>
+{
+    config.UseSimpleAssemblyNameTypeSerializer()
+        .UseRecommendedSerializerSettings()
+        .UseInMemoryStorage();
+});
+builder.Services.AddHangfireServer();
 
 builder.Services.AddMassTransit(x =>
 {
