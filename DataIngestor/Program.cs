@@ -1,7 +1,9 @@
 
 
 using DataIngestor.Configuration;
+using DataIngestor.Helpers;
 using Hangfire;
+using Hangfire.Dashboard;
 using Hangfire.PostgreSql;
 using MassTransit;
 using Microsoft.Extensions.Options;
@@ -55,6 +57,11 @@ app.UseAuthorization();
 
 
 app.MapControllers();
+
+
+app.UseHangfireDashboard("/hangfire");
+
+JobHelper.SetUpRecurringFetch(app);
 
 app.Run();
 
