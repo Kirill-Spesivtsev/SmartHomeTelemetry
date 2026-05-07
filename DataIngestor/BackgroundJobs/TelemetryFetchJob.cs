@@ -38,40 +38,52 @@ public class TelemetryFetchJob
     {
         var intervalSeconds = _options.IntervalSeconds;
 
-        var httpClient = _httpClientFactory.CreateClient();
-
-        var metrics = await httpClient.GetFromJsonAsync<List<UnstableMetricDto>>("/meters", new JsonSerializerOptions(JsonSerializerDefaults.Web));
-
-        if (metrics is null || metrics.Count == 0)
+        try
         {
-            return;
-        }
+            var httpClient = _httpClientFactory.CreateClient();
 
-        var now = DateTime.UtcNow;
-        var published = 0;
-        var batch = new List<TelemetryEvent>(_options.BatchSize);
+            var metrics = await httpClient.GetFromJsonAsync<List<UnstableMetricDto>>("/meters", new JsonSerializerOptions(JsonSerializerDefaults.Web));
 
-        foreach (var metric in metrics)
-        {
-            if (!TryMap(metric, now, out var evt))
+            if (metrics is null || metrics.Count == 0)
             {
-                continue;
+                _logger.LogWarning("Failed to fetch telemetry from unstable API.");
+                return;
             }
 
-            batch.Add(evt);
-            if (batch.Count >= _options.BatchSize)
+            var now = DateTime.UtcNow;
+            var published = 0;
+            var batch = new List<TelemetryEvent>(_options.BatchSize);
+
+            foreach (var metric in metrics)
+            {
+                if (!TryMap(metric, now, out var evt))
+                {
+                    _logger.LogWarning("Unsupported metric payload. type={Type} name={Name}", metric.Type, metric.Name);
+                    continue;
+                }
+
+                batch.Add(evt);
+                if (batch.Count >= _options.BatchSize)
+                {
+                    await PublishBatchAsync(batch, now);
+                    published += batch.Count;
+                    batch.Clear();
+                }
+            }
+
+            if (batch.Count > 0)
             {
                 await PublishBatchAsync(batch, now);
                 published += batch.Count;
-                batch.Clear();
             }
+
+            _logger.LogInformation("Published {Count} telemetry events in batches.", published);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Auto fetch job failed.");
         }
 
-        if (batch.Count > 0)
-        {
-            await PublishBatchAsync(batch, now);
-            published += batch.Count;
-        }
     }
 
     private static bool TryMap(UnstableMetricDto meter, DateTime timestampUtc, out TelemetryEvent evt)
