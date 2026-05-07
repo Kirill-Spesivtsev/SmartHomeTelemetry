@@ -11,6 +11,10 @@ using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.Configure<UnstableApiOptions>(builder.Configuration.GetSection(UnstableApiOptions.SectionName));
+builder.Services.Configure<RabbitMqOptions>(builder.Configuration.GetSection(RabbitMqOptions.SectionName));
+builder.Services.Configure<TelemetryFetchOptions>(builder.Configuration.GetSection(TelemetryFetchOptions.SectionName));
+
 builder.Host.UseSerilog((ctx, services, cfg) =>
 {
     cfg.ReadFrom.Configuration(ctx.Configuration)
