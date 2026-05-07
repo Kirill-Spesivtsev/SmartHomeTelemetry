@@ -16,17 +16,20 @@ public class TelemetryFetchJob
     private readonly IPublishEndpoint _publishEndpoint;
     private readonly IBackgroundJobClient _backgroundJobClient;
     private readonly TelemetryFetchOptions _options;
+    private readonly ILogger<TelemetryFetchJob> _logger;
 
     public TelemetryFetchJob(
         IHttpClientFactory httpClientFactory,
         IPublishEndpoint publishEndpoint,
         IBackgroundJobClient backgroundJobClient,
-        IOptions<TelemetryFetchOptions> options)
+        IOptions<TelemetryFetchOptions> options,
+        ILogger<TelemetryFetchJob> logger)
     {
         _httpClientFactory = httpClientFactory;
         _publishEndpoint = publishEndpoint;
         _backgroundJobClient = backgroundJobClient;
         _options = options.Value;
+        _logger = logger;
     }
 
     [DisableConcurrentExecution(timeoutInSeconds: 60)]
@@ -45,7 +48,8 @@ public class TelemetryFetchJob
         }
 
         var now = DateTime.UtcNow;
-        var list = new List<TelemetryEvent>();
+        var published = 0;
+        var batch = new List<TelemetryEvent>(_options.BatchSize);
 
         foreach (var metric in metrics)
         {
@@ -54,14 +58,20 @@ public class TelemetryFetchJob
                 continue;
             }
 
-            list.Add(evt);
+            batch.Add(evt);
+            if (batch.Count >= _options.BatchSize)
+            {
+                await PublishBatchAsync(batch, now);
+                published += batch.Count;
+                batch.Clear();
+            }
         }
 
-        if (list.Count > 0)
+        if (batch.Count > 0)
         {
-            await PublishBatchAsync(list, now);
+            await PublishBatchAsync(batch, now);
+            published += batch.Count;
         }
-
     }
 
     private static bool TryMap(UnstableMetricDto meter, DateTime timestampUtc, out TelemetryEvent evt)
@@ -92,6 +102,7 @@ public class TelemetryFetchJob
     private Task PublishBatchAsync(List<TelemetryEvent> items, DateTime timestampUtc)
     {
         var batchEvent = new TelemetryBatchEvent(
+            BatchId: Guid.NewGuid(),
             TimestampUtc: timestampUtc,
             Items: items.ToArray());
 

@@ -11,6 +11,7 @@ public record TelemetryEvent(
     JsonElement Payload);
 
 public record TelemetryBatchEvent(
+    Guid BatchId,
     DateTime TimestampUtc,
     IReadOnlyList<TelemetryEvent> Items);
 
