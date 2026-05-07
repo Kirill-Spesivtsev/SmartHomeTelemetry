@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ApiGateway\ApiGateway.Application\ApiGateway.Application.csproj" />
+    <ProjectReference Include="..\ApiGateway.Application\ApiGateway.Application.csproj" />
   </ItemGroup>
 
 </Project>

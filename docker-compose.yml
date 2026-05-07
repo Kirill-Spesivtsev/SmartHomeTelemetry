@@ -1,9 +1,16 @@
 services:
-  dataprocessor.api:
-    image: ${DOCKER_REGISTRY-}dataprocessorapi
-    build:
-      context: .
-      dockerfile: DataProcessor/DataProcessor.Api/Dockerfile
+
+  rabbitmq: 
+    container_name: rabbitmq
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
 
   dataingestor:
     image: ${DOCKER_REGISTRY-}dataingestor
@@ -11,6 +18,11 @@ services:
       context: .
       dockerfile: DataIngestor/Dockerfile
 
+  dataprocessor.api:
+    image: ${DOCKER_REGISTRY-}dataprocessorapi
+    build:
+      context: .
+      dockerfile: DataProcessor/DataProcessor.Api/Dockerfile
 
   apigateway.api:
     image: ${DOCKER_REGISTRY-}apigatewayapi
@@ -18,10 +30,12 @@ services:
       context: .
       dockerfile: ApiGateway/ApiGateway.Api/Dockerfile
 
-
   notificationservice:
     image: ${DOCKER_REGISTRY-}notificationservice
     build:
       context: .
       dockerfile: NotificationService/Dockerfile
+
+volumes:
+  rabbitmq-data:
 
