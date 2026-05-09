@@ -40,6 +40,6 @@ app.MapControllers();
 
 app.UseAuthorization();
 
-app.MapControllers();
+await app.ApplyMigrationsAsync();
 
 app.Run();
