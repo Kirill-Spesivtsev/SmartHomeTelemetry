@@ -1,6 +1,7 @@
 using DataProcessor.Api.Configuration;
 using DataProcessor.Api.Extensions;
 using DataProcessor.Infrastructure;
+using DataProcessor.Infrastructure.Messaging.Consumers;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -18,8 +19,6 @@ builder.Host.UseSerilog((ctx, services, cfg) =>
 });
 
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
 
 builder.Services.AddDbContext<TelemetryDbContext>(o =>
 {
@@ -42,9 +41,8 @@ builder.Services.AddMassTransit(x =>
         });
 
         cfg.ReceiveEndpoint(TelemetryTopics.TelemetryQueue, e =>
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
+        {
+            e.ConfigureConsumer<TelemetryEventConsumer>(ctx);
             e.UseMessageRetry(r => r.Interval(3, TimeSpan.FromSeconds(2)));
         });
     });
@@ -57,8 +55,6 @@ app.UseSerilogRequestLogging();
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
-
-app.UseAuthorization();
 
 await app.ApplyMigrationsAsync();
 
