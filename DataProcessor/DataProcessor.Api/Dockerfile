@@ -10,6 +10,9 @@ FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["DataProcessor/DataProcessor.Api/DataProcessor.Api.csproj", "DataProcessor/DataProcessor.Api/"]
+COPY ["DataProcessor/DataProcessor.Infrastructure/DataProcessor.Infrastructure.csproj", "DataProcessor/DataProcessor.Infrastructure/"]
+COPY ["DataProcessor/DataProcessor.Domain/DataProcessor.Domain.csproj", "DataProcessor/DataProcessor.Domain/"]
+COPY ["SmartHomeTelemetry.Shared/SmartHomeTelemetry.Shared.csproj", "SmartHomeTelemetry.Shared/"]
 RUN dotnet restore "./DataProcessor/DataProcessor.Api/DataProcessor.Api.csproj"
 COPY . .
 WORKDIR "/src/DataProcessor/DataProcessor.Api"
