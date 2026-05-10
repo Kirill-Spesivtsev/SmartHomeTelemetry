@@ -12,4 +12,16 @@ public interface ITelemetryReadService
     public IQueryable<MotionMetric> GetMotionMetrics();
 
     public IQueryable<AirQualityMetric> GetAirQualityMetrics();
+
+    public Task<IReadOnlyList<AirQualityMetricDto>> GetLatestAirQualityMetrics(
+        DateTime? fromUtc,
+        CancellationToken cancellationToken);
+
+    public Task<IReadOnlyList<EnergyMetricDto>> GetLatestEnergyMetrics(
+        DateTime? fromUtc,
+        CancellationToken cancellationToken);
+
+    public Task<IReadOnlyList<MotionMetricDto>> GetLatestMotionMetrics(
+        DateTime? fromUtc,
+        CancellationToken cancellationToken);
 }

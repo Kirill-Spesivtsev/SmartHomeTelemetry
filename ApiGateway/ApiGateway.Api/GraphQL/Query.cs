@@ -41,4 +41,34 @@ public class Query
     public IQueryable<AirQualityMetric> GetAirQualityMetrics([Service] TelemetryReadService service) =>
         service.GetAirQualityMetrics();
 
+
+    [Cost(10)]
+    [ListSize(AssumedSize = 20, RequireOneSlicingArgument = false)]
+    public Task<IReadOnlyList<AirQualityMetricDto>> GetLatestAirQualityMetrics(
+        [Service] TelemetryReadService service, 
+        DateTime? fromUtc, 
+        CancellationToken cancellationToken) =>
+        service.GetLatestAirQualityMetrics(fromUtc, cancellationToken);
+
+    [Cost(10)]
+    [ListSize(AssumedSize = 20, RequireOneSlicingArgument = false)]
+    public Task<IReadOnlyList<EnergyMetricDto>> GetLatestEnergyMetrics(
+        [Service] TelemetryReadService service, 
+        DateTime? fromUtc, 
+        CancellationToken cancellationToken)
+    {
+        return service.GetLatestEnergyMetrics(fromUtc, cancellationToken);
+    }
+        
+
+    [Cost(10)]
+    [ListSize(AssumedSize = 20, RequireOneSlicingArgument = false)]
+    public Task<IReadOnlyList<MotionMetricDto>> GetLatestMotionMetrics(
+        [Service] TelemetryReadService service, 
+        DateTime? fromUtc, 
+        CancellationToken cancellationToken)
+    {
+        return service.GetLatestMotionMetrics(fromUtc, cancellationToken);
+    }
+
 }
