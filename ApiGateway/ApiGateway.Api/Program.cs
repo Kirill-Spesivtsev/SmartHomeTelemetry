@@ -1,3 +1,6 @@
+using ApiGateway.Api.GraphQL;
+using ApiGateway.Application.Abstractions;
+using ApiGateway.Application.Services;
 using ApiGateway.Infrastructure;
 using ApiGateway.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -14,7 +17,6 @@ builder.Host.UseSerilog((ctx, services, cfg) =>
 });
 
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
 builder.Services.AddDbContext<TelemetryReadDbContext>(o =>
@@ -23,11 +25,21 @@ builder.Services.AddDbContext<TelemetryReadDbContext>(o =>
     o.UseNpgsql(cs);
 });
 builder.Services.AddScoped<ITelemetryReadRepository, TelemetryReadRepository>();
+builder.Services.AddScoped<TelemetryReadService, TelemetryReadService>();
+
+builder.Services
+    .AddGraphQLServer()
+    .AddQueryType<Query>()
+    .AddFiltering()
+    .AddSorting()
+    .AddProjections()
+    .ModifyCostOptions(opt => opt.MaxTypeCost = 10000);
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
@@ -37,9 +49,11 @@ if (app.Environment.IsDevelopment())
 
 app.UseSerilogRequestLogging();
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapGraphQL("/graphql");
+
+
 
 app.Run();
