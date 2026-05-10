@@ -7,8 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Entities\" />
-    <Folder Include="Interfaces\" />
+    <ProjectReference Include="..\..\SmartHomeTelemetry.Shared\SmartHomeTelemetry.Shared.csproj" />
   </ItemGroup>
 
 </Project>
