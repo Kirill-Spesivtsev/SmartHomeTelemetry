@@ -55,5 +55,6 @@ app.MapControllers();
 app.MapGraphQL("/graphql");
 
 
+app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
 
 app.Run();
