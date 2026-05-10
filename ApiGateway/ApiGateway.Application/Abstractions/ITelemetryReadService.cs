@@ -1,3 +1,4 @@
+
 using ApiGateway.Application.Dtos;
 using ApiGateway.Domain.Entities;
 
@@ -23,5 +24,16 @@ public interface ITelemetryReadService
 
     public Task<IReadOnlyList<MotionMetricDto>> GetLatestMotionMetrics(
         DateTime? fromUtc,
+        CancellationToken cancellationToken);
+
+
+    public Task<IReadOnlyList<EnergyAggregateByLocation>> GetEnergyAggregatesByLocation(
+        DateTime? fromUtc,
+        DateTime? toUtc,
+        CancellationToken cancellationToken);
+
+    public Task<IReadOnlyList<AirQualityAggregateByLocation>> GetAirQualityAggregatesByLocation(
+        DateTime? fromUtc,
+        DateTime? toUtc,
         CancellationToken cancellationToken);
 }

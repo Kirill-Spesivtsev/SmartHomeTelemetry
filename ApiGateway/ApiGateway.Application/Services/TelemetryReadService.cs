@@ -121,4 +121,73 @@ public class TelemetryReadService : ITelemetryReadService
             .ToListAsync(cancellationToken);
     }
 
+
+    public async Task<IReadOnlyList<EnergyAggregateByLocation>> GetEnergyAggregatesByLocation(
+        DateTime? fromUtc,
+        DateTime? toUtc,
+        CancellationToken cancellationToken)
+    {
+        var from = (fromUtc ?? DateTime.UtcNow.AddHours(-24)).ToUniversalTime();
+        var to = toUtc?.ToUniversalTime();
+
+        var filtered = _repository.GetEnergyMetrics().Where(m => m.CreatedAt >= from);
+        if (to.HasValue)
+            filtered = filtered.Where(m => m.CreatedAt <= to.Value);
+
+        var query = filtered
+            .GroupBy(x => new
+            {
+                x.LocationId,
+                x.Location!.Name
+            })
+            .Select(g => new EnergyAggregateByLocation
+            {
+                LocationId = g.Key.LocationId,
+                LocationName = g.Key.Name,
+                Count = g.Count(),
+                AvgEnergy = g.Average(x => x.Energy),
+                MinEnergy = g.Min(x => x.Energy),
+                MaxEnergy = g.Max(x => x.Energy)
+            });
+
+        return await query.ToListAsync(cancellationToken);
+    }
+
+    public async Task<IReadOnlyList<AirQualityAggregateByLocation>> GetAirQualityAggregatesByLocation(
+        DateTime? fromUtc,
+        DateTime? toUtc,
+        CancellationToken cancellationToken)
+    {
+        var from = (fromUtc ?? DateTime.UtcNow.AddHours(-24)).ToUniversalTime();
+        var to = toUtc?.ToUniversalTime();
+
+        var filtered = _repository.GetAirQualityMetrics().Where(m => m.CreatedAt >= from);
+        if (to.HasValue)
+            filtered = filtered.Where(m => m.CreatedAt <= to.Value);
+
+        var query = filtered
+            .GroupBy(x => new
+            {
+                x.LocationId,
+                x.Location!.Name
+            })
+            .Select(g => new AirQualityAggregateByLocation
+            {
+                LocationId = g.Key.LocationId,
+                LocationName = g.Key.Name,
+                Count = g.Count(),
+                AvgCo2 = g.Average(x => x.Co2),
+                MinCo2 = g.Min(x => x.Co2),
+                MaxCo2 = g.Max(x => x.Co2),
+                AvgPm25 = g.Average(x => x.Pm25),
+                MinPm25 = g.Min(x => x.Pm25),
+                MaxPm25 = g.Max(x => x.Pm25),
+                AvgHumidity = g.Average(x => x.Humidity),
+                MinHumidity = g.Min(x => x.Humidity),
+                MaxHumidity = g.Max(x => x.Humidity),
+            });
+
+        return await query.ToListAsync(cancellationToken);
+    }
+
 }

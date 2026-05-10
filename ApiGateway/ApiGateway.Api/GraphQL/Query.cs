@@ -70,5 +70,29 @@ public class Query
     {
         return service.GetLatestMotionMetrics(fromUtc, cancellationToken);
     }
+        
+
+    [Cost(15)]
+    [ListSize(AssumedSize = 20, RequireOneSlicingArgument = false)]
+    public Task<IReadOnlyList<EnergyAggregateByLocation>> GetEnergyAggregatesByLocation(
+        [Service] TelemetryReadService service, 
+        DateTime? fromUtc, 
+        DateTime? toUtc,
+        CancellationToken cancellationToken)
+    {
+        return service.GetEnergyAggregatesByLocation(fromUtc, toUtc, cancellationToken);
+    }
+        
+
+    [Cost(15)]
+    [ListSize(AssumedSize = 20, RequireOneSlicingArgument = false)]
+    public Task<IReadOnlyList<AirQualityAggregateByLocation>> GetAirQualityAggregatesByLocation(
+        [Service] TelemetryReadService service,
+        DateTime? fromUtc,
+        DateTime? toUtc,
+        CancellationToken cancellationToken)
+    {
+        return service.GetAirQualityAggregatesByLocation(fromUtc, toUtc, cancellationToken);
+    }
 
 }
