@@ -18,7 +18,6 @@ builder.Host.UseSerilog((ctx, services, cfg) =>
 });
 
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
 builder.Services.AddSignalR();
@@ -47,14 +46,12 @@ builder.Services.AddMassTransit(x =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
 
 app.UseSerilogRequestLogging();
-app.UseHttpsRedirection();
 
 app.UseHttpsRedirection();
 app.UseAuthorization();
@@ -62,5 +59,7 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.MapHub<TelemetryHub>(TelemetryHub.HubPath);
+
+app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
 
 app.Run();
