@@ -26,6 +26,7 @@ builder.Services.AddSignalR();
 builder.Services.AddMassTransit(x =>
 {
     x.SetKebabCaseEndpointNameFormatter();
+    x.AddConsumer<TelemetryBroadcastConsumer>();
 
     x.UsingRabbitMq((ctx, cfg) =>
     {
@@ -34,6 +35,12 @@ builder.Services.AddMassTransit(x =>
         {
             h.Username(rabbitOptions.Username);
             h.Password(rabbitOptions.Password);
+        });
+
+        cfg.ReceiveEndpoint(TelemetryTopics.TelemetryQueue, e =>
+        {
+            e.ConfigureConsumer<TelemetryBroadcastConsumer>(ctx);
+            e.UseMessageRetry(r => r.Interval(3, TimeSpan.FromSeconds(2)));
         });
     });
 });
