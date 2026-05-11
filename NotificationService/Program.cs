@@ -1,9 +1,13 @@
+using MassTransit;
+using NotificationService.Consumers;
 using NotificationService.Hubs;
 using NotificationService;
 using Serilog;
 using SmartHomeTelemetry.Shared.Contracts;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.Configure<RabbitMqOptions>(builder.Configuration.GetSection(RabbitMqOptions.SectionName));
 
 builder.Host.UseSerilog((ctx, services, cfg) =>
 {
@@ -18,6 +22,21 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 builder.Services.AddSignalR();
+
+builder.Services.AddMassTransit(x =>
+{
+    x.SetKebabCaseEndpointNameFormatter();
+
+    x.UsingRabbitMq((ctx, cfg) =>
+    {
+        var rabbitOptions = ctx.GetRequiredService<IOptions<RabbitMqOptions>>().Value;
+        cfg.Host(rabbitOptions.Host, "/", h =>
+        {
+            h.Username(rabbitOptions.Username);
+            h.Password(rabbitOptions.Password);
+        });
+    });
+});
 
 var app = builder.Build();
 
