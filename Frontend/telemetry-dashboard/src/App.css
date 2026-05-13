@@ -1,0 +1,129 @@
+.Page {
+  min-height: 100vh;
+  padding: 22px;
+  background: radial-gradient(
+      1200px 600px at 10% 10%,
+      rgba(56, 189, 248, 0.15),
+      transparent 60%
+    ),
+    radial-gradient(
+      900px 500px at 90% 20%,
+      rgba(167, 139, 250, 0.12),
+      transparent 55%
+    ),
+    #020617;
+  color: rgba(226, 232, 240, 0.95);
+}
+
+.TopBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.Title {
+  font-size: 20px;
+  font-weight: 750;
+}
+
+.SubTitle {
+  opacity: 0.8;
+  margin-top: 4px;
+  font-size: 12px;
+}
+
+.Grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+@media (min-width: 1100px) {
+  .Grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .Grid > :nth-child(1) {
+    grid-column: span 2;
+  }
+}
+
+.Pill {
+  font-size: 12px;
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+}
+
+.Muted {
+  opacity: 0.75;
+}
+
+.Error {
+  color: #fca5a5;
+}
+
+.Pre {
+  margin: 0;
+  padding: 10px;
+  border-radius: 12px;
+  background: rgba(2, 6, 23, 0.9);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  overflow: auto;
+  max-height: 220px;
+  font-size: 12px;
+}
+
+.Table {
+  display: grid;
+  gap: 6px;
+}
+
+.Row {
+  display: grid;
+  grid-template-columns: 1.4fr 0.7fr 0.7fr 0.7fr 0.6fr;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  border-radius: 12px;
+  background: rgba(2, 6, 23, 0.35);
+  font-size: 13px;
+}
+
+.Row.Head {
+  opacity: 0.85;
+  font-size: 12px;
+  background: rgba(2, 6, 23, 0.6);
+}
+
+.Card {
+  background: #0f172a;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  border-radius: 14px;
+  padding: 14px 14px 12px;
+}
+
+.Card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.Card-title {
+  font-weight: 650;
+  letter-spacing: 0.2px;
+}
+
+.Card-right {
+  opacity: 0.85;
+  font-size: 12px;
+}
+
+.Card-body {
+  color: rgba(226, 232, 240, 0.95);
+}
+
