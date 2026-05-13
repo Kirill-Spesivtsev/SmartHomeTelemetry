@@ -11,6 +11,7 @@
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
     "@apollo/client": "^3.14.0",
+    "@microsoft/signalr": "^8.0.7",
     "graphql": "^16.11.0",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
