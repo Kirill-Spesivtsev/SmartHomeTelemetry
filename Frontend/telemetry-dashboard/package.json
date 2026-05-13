@@ -10,6 +10,8 @@
     "@types/node": "^24.7.2",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
+    "@apollo/client": "^3.14.0",
+    "graphql": "^16.11.0",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
     "react-scripts": "^5.0.1",
