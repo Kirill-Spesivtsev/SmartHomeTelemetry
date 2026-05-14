@@ -10,13 +10,19 @@ import {
   GET_LATEST_MOTION,
   GET_MOTION_METRICS,
 } from "../../graphql/queries";
-import { AirRow, Co2PmItem, EnergyRow, HumidityRadialItem, MotionBarItem, MotionRow, RadarEnergyItem, RangeKey } from "../../types/models";
-import { chartPalette, rangeStartUtc } from "./dashboard-chart-utils";
+import { AirRow, AirScatterItem, Co2PmItem, EnergyRow, GroupedAirScatterItem, HumidityRadialItem, MotionBarItem, MotionRow, RadarEnergyItem, RangeKey } from "../../types/models";
+import { airSeriesByLocation, chartPalette, energySeriesByLocation, rangeStartUtc } from "./dashboard-chart-utils";
 import { GetAirAggregatesData, GetAirQualityMetricsData, GetEnergyAggregatesData, GetEnergyMetricsData, GetLatestAirData, GetLatestEnergyData, GetLatestMotionData, GetMotionMetricsData, QueryFromUtc, QueryWithRange } from "../../types/queries";
 import CurrentMotionChart from "../../components/charts/current-motion-chart";
 import CurrentEnergyChart from "../../components/charts/current-energy-chart";
 import CurrentAirPollutionChart from "../../components/charts/current-air-pollution-chart";
 import CurrentAirHumidityChart from "../../components/charts/current-air-humidity-chart";
+import AirCo2HistoryChart from "../../components/charts/air-co2-history-chart";
+import AirPm25HistoryChart from "../../components/charts/air-pm25-history-chart";
+import AirHumidityHistoryChart from "../../components/charts/air-humidity-history-chart";
+import EnergyHistoryChart from "../../components/charts/energy-history-chart";
+import AirPollutionHistoryChart from "../../components/charts/air-pollution-history-chart";
+import { AirQualityMetric, EnergyMetric } from "../../types/data";
 
 
 export default function Dashboard() {
@@ -93,14 +99,24 @@ export default function Dashboard() {
     [latestMotion.data],
   );
 
-  const latestMotionData = useMemo<MotionBarItem[]>(
-  () =>
-    motionRows.map((m) => ({
-      room: m.locationName,
-      motion: m.motionDetected ? 1 : 0,
-    })),
-  [motionRows],
+  const airHistory = useMemo<AirQualityMetric[]>(
+  () => airWindow.data?.airQualityMetrics?.nodes ?? [],
+  [airWindow.data],
 );
+
+const energyHistory = useMemo<EnergyMetric[]>(
+  () => energyWindow.data?.energyMetrics?.nodes ?? [],
+  [energyWindow.data],
+);
+
+  const latestMotionData = useMemo<MotionBarItem[]>(
+    () =>
+      motionRows.map((m) => ({
+        room: m.locationName,
+        motion: m.motionDetected ? 1 : 0,
+      })),
+    [motionRows],
+  );
 
   const humidityRadial = useMemo<HumidityRadialItem[]>(
     () =>
@@ -131,13 +147,73 @@ export default function Dashboard() {
     [airRows],
   );
 
+  const roomsFromAirHistory = useMemo<string[]>(
+    () => {
+      const names = airHistory.map((r) => r.location.name);
+      return Array.from(new Set(names)).sort();
+    },
+    [airHistory],
+  );
+
+  const co2Series = useMemo(
+    () => airSeriesByLocation(airHistory, "co2"),
+    [airHistory],
+  );
+
+  const pm25Series = useMemo(
+    () => airSeriesByLocation(airHistory, "pm25"),
+    [airHistory],
+  );
+
+  const humiditySeries = useMemo(
+    () => airSeriesByLocation(airHistory, "humidity"),
+    [airHistory],
+  );
+
+  const energySeries = useMemo(
+    () => energySeriesByLocation(energyHistory),
+    [energyHistory],
+  );
+
+  const energyRooms = useMemo<string[]>(
+    () => {
+      const names = energyHistory.map((r) => r.location.name);
+      return Array.from(new Set(names)).sort();
+    },
+    [energyHistory],
+  );
+
+  const scatterPmCo2 = useMemo<AirScatterItem[]>(
+    () =>
+      airHistory.map((r) => ({
+        co2: r.co2,
+        pm25: r.pm25,
+        name: r.location.name,
+      })),
+    [airHistory],
+  );
+
+  const groupedAirScatter = useMemo<GroupedAirScatterItem[]>(
+    () =>
+      Object.values(
+        scatterPmCo2.reduce<Record<string, GroupedAirScatterItem>>((acc, item) => {
+          if (!acc[item.name]) {
+            acc[item.name] = { name: item.name, data: [] };
+          }
+          acc[item.name].data.push(item);
+          return acc;
+        }, {}),
+      ).sort((a, b) => a.name.localeCompare(b.name)),
+    [scatterPmCo2],
+  );
+
   return (
     <div className="min-h-screen">
 
       <main className="mx-auto space-y-10 px-4 py-8">
         <section>
-          <h2 className="mb-4 text-2xl font-semibold text-white">Current metrics</h2>
-          
+          <h2 className="mb-4 text-2xl font-semibold text-white">Current metrics ({rangeKey})</h2>
+
           <div className="grid gap-4 lg:grid-cols-2">
             <CurrentMotionChart data={latestMotionData}/>
 
@@ -151,6 +227,18 @@ export default function Dashboard() {
 
         <section>
           <h2 className="mb-4 text-2xl font-semibold text-white"> Telemetry history</h2>
+
+          <div className="flex flex-col gap-4">
+            <AirCo2HistoryChart data={co2Series} legend={roomsFromAirHistory}/>
+
+            <AirPm25HistoryChart data={pm25Series} legend={roomsFromAirHistory}/>
+
+            <AirHumidityHistoryChart data={humiditySeries} legend={roomsFromAirHistory}/>
+
+            <EnergyHistoryChart data={energySeries} legend={energyRooms}/>
+
+            <AirPollutionHistoryChart data={groupedAirScatter}/>
+          </div>
         </section>
 
         <section>
