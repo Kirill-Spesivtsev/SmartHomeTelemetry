@@ -33,6 +33,7 @@ import HumidityAggregateTable from "../../components/tables/humidity-aggregate-t
 import { LoadingOverlay } from "../../components/loading-overlay";
 import DashboardHeader from "./dashboard-header";
 import DashboardFooter from "./dashboard-footer";
+import { useSignalRTelemetry } from "../../realtime/useSignalRTelemetry";
 
 
 export default function Dashboard() {
@@ -244,6 +245,29 @@ export default function Dashboard() {
     aggAir.error ||
     airWindow.error ||
     energyWindow.error;
+
+  const realtime = useSignalRTelemetry();
+
+  useEffect(() => {
+    if (!realtime.lastEvent) return;
+
+    const timeout = setTimeout(() => {
+      const vars = { fromUtc };
+
+      latestAir.refetch(vars);
+      latestEnergy.refetch(vars);
+      latestMotion.refetch(vars);
+      energyMetrics.refetch(vars);
+      motionMetrics.refetch(vars);
+      airQualityMetrics.refetch(vars);
+      aggEnergy.refetch(vars);
+      aggAir.refetch(vars);
+      airWindow.refetch({ ...vars, first: 500 });
+      energyWindow.refetch({ ...vars, first: 500 });
+    }, 1000);
+
+    return () => clearTimeout(timeout);
+  }, [realtime.lastEvent, fromUtc]);
 
   return (
     <div className="min-h-screen">
