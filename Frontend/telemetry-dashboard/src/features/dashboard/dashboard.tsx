@@ -32,6 +32,7 @@ import Pm25AggregateTable from "../../components/tables/pm25-aggregate-table";
 import HumidityAggregateTable from "../../components/tables/humidity-aggregate-table";
 import { LoadingOverlay } from "../../components/loading-overlay";
 import DashboardHeader from "./dashboard-header";
+import DashboardFooter from "./dashboard-footer";
 
 
 export default function Dashboard() {
@@ -322,6 +323,9 @@ export default function Dashboard() {
           </div>
         </section>
       </main>
+
+      <DashboardFooter/>
+      
     </div>
   );
 }
