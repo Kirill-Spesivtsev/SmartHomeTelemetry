@@ -30,6 +30,7 @@ import EnergyAggregateTable from "../../components/tables/energy-aggregate-table
 import Co2AggregateTable from "../../components/tables/co2-aggregate-table";
 import Pm25AggregateTable from "../../components/tables/pm25-aggregate-table";
 import HumidityAggregateTable from "../../components/tables/humidity-aggregate-table";
+import { LoadingOverlay } from "../../components/loading-overlay";
 
 
 export default function Dashboard() {
@@ -224,6 +225,15 @@ export default function Dashboard() {
     [aggEnergy.data],
   );
 
+  const graphqlLoading =
+    latestAir.loading ||
+    latestEnergy.loading ||
+    latestMotion.loading ||
+    aggEnergy.loading ||
+    aggAir.loading ||
+    airWindow.loading ||
+    energyWindow.loading;
+
   const anyError =
     latestAir.error ||
     latestEnergy.error ||
@@ -235,6 +245,8 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen">
+
+      <LoadingOverlay visible={graphqlLoading} />
 
       {anyError ? (
         <div className="mx-auto max-w-[1600px] px-4 py-3 text-sm text-amber-300">
