@@ -270,7 +270,7 @@ export default function Dashboard() {
   }, [realtime.lastEvent, fromUtc]);
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-950 to-slate-900 text-slate-100">
 
       <LoadingOverlay visible={graphqlLoading} />
 
@@ -290,7 +290,7 @@ export default function Dashboard() {
         </div>
       ) : null}
 
-      <main className="mx-auto space-y-10 px-4 py-8">
+      <main className="mx-auto max-w-[1600px] space-y-10 px-4 py-8">
         <section>
           <h2 className="mb-4 text-2xl font-semibold text-white">Current metrics</h2>
 
