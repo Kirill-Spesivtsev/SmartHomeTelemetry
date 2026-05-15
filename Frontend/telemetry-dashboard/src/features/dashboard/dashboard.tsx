@@ -22,7 +22,14 @@ import AirPm25HistoryChart from "../../components/charts/air-pm25-history-chart"
 import AirHumidityHistoryChart from "../../components/charts/air-humidity-history-chart";
 import EnergyHistoryChart from "../../components/charts/energy-history-chart";
 import AirPollutionHistoryChart from "../../components/charts/air-pollution-history-chart";
-import { AirQualityMetric, EnergyMetric } from "../../types/data";
+import { AirQualityAggregate, AirQualityMetric, EnergyAggregate, EnergyMetric } from "../../types/data";
+import LastAirQualityTable from "../../components/tables/last-air-quality-table";
+import LastEnergyTable from "../../components/tables/last-energy-table";
+import LastMotionTable from "../../components/tables/last-motion-table";
+import EnergyAggregateTable from "../../components/tables/energy-aggregate-table";
+import Co2AggregateTable from "../../components/tables/co2-aggregate-table";
+import Pm25AggregateTable from "../../components/tables/pm25-aggregate-table";
+import HumidityAggregateTable from "../../components/tables/humidity-aggregate-table";
 
 
 export default function Dashboard() {
@@ -100,14 +107,14 @@ export default function Dashboard() {
   );
 
   const airHistory = useMemo<AirQualityMetric[]>(
-  () => airWindow.data?.airQualityMetrics?.nodes ?? [],
-  [airWindow.data],
-);
+    () => airWindow.data?.airQualityMetrics?.nodes ?? [],
+    [airWindow.data],
+  );
 
-const energyHistory = useMemo<EnergyMetric[]>(
-  () => energyWindow.data?.energyMetrics?.nodes ?? [],
-  [energyWindow.data],
-);
+  const energyHistory = useMemo<EnergyMetric[]>(
+    () => energyWindow.data?.energyMetrics?.nodes ?? [],
+    [energyWindow.data],
+  );
 
   const latestMotionData = useMemo<MotionBarItem[]>(
     () =>
@@ -207,12 +214,22 @@ const energyHistory = useMemo<EnergyMetric[]>(
     [scatterPmCo2],
   );
 
+    const airAggregatedRows = useMemo<AirQualityAggregate[]>(
+    () => aggAir.data?.airQualityAggregatesByLocation ?? [],
+    [aggAir.data],
+  );
+
+  const energyAggregatedRows = useMemo<EnergyAggregate[]>(
+    () => aggEnergy.data?.energyAggregatesByLocation ?? [],
+    [aggEnergy.data],
+  );
+
   return (
     <div className="min-h-screen">
 
       <main className="mx-auto space-y-10 px-4 py-8">
         <section>
-          <h2 className="mb-4 text-2xl font-semibold text-white">Current metrics ({rangeKey})</h2>
+          <h2 className="mb-4 text-2xl font-semibold text-white">Current metrics</h2>
 
           <div className="grid gap-4 lg:grid-cols-2">
             <CurrentMotionChart data={latestMotionData}/>
@@ -226,7 +243,7 @@ const energyHistory = useMemo<EnergyMetric[]>(
         </section>
 
         <section>
-          <h2 className="mb-4 text-2xl font-semibold text-white"> Telemetry history</h2>
+          <h2 className="mb-4 text-2xl font-semibold text-white"> Telemetry history ({rangeKey})</h2>
 
           <div className="flex flex-col gap-4">
             <AirCo2HistoryChart data={co2Series} legend={roomsFromAirHistory}/>
@@ -243,10 +260,28 @@ const energyHistory = useMemo<EnergyMetric[]>(
 
         <section>
           <h2 className="mb-4 text-2xl font-semibold text-white">Last values</h2>
+
+          <div className="grid gap-4 lg:grid-cols-3">
+            <LastAirQualityTable rows={airRows}/>
+
+            <LastEnergyTable rows={energyRows}/>
+
+            <LastMotionTable rows={motionRows}/>
+          </div>
         </section>
 
         <section>
-          <h2 className="mb-4 text-2xl font-semibold text-white">Aggregates</h2>
+          <h2 className="mb-4 text-2xl font-semibold text-white">Aggregates ({rangeKey})</h2>
+
+          <EnergyAggregateTable rows={energyAggregatedRows}/>
+
+          <div className="grid gap-4 lg:grid-cols-3">
+            <Co2AggregateTable rows={airAggregatedRows}/>
+            
+            <Pm25AggregateTable rows={airAggregatedRows}/>
+            
+            <HumidityAggregateTable rows={airAggregatedRows}/>
+          </div>
         </section>
       </main>
     </div>
