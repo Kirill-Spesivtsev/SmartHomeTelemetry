@@ -224,8 +224,31 @@ export default function Dashboard() {
     [aggEnergy.data],
   );
 
+  const anyError =
+    latestAir.error ||
+    latestEnergy.error ||
+    latestMotion.error ||
+    aggEnergy.error ||
+    aggAir.error ||
+    airWindow.error ||
+    energyWindow.error;
+
   return (
     <div className="min-h-screen">
+
+      {anyError ? (
+        <div className="mx-auto max-w-[1600px] px-4 py-3 text-sm text-amber-300">
+          Some requests completed with errors.{" "}
+          <span className="text-slate-500">
+            {String(
+              latestAir.error?.message ??
+                latestEnergy.error?.message ??
+                airWindow.error?.message ??
+                "",
+            )}
+          </span>
+        </div>
+      ) : null}
 
       <main className="mx-auto space-y-10 px-4 py-8">
         <section>
