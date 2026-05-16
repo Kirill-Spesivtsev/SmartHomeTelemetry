@@ -8,6 +8,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - "5000:8080"
+    networks:
+      - internal
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://localhost:8080/health || exit 1"]
       interval: 10s
@@ -25,6 +27,8 @@ services:
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
     volumes:
       - rabbitmq-data:/var/lib/rabbitmq
+    networks:
+      - internal
     healthcheck:
       test: ["CMD-SHELL", "rabbitmq-diagnostics -q ping"]
       interval: 10s
@@ -43,6 +47,8 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
     restart: unless-stopped
+    networks:
+      - internal
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 10s
@@ -60,6 +66,8 @@ services:
     volumes:
       - pgadmin-data:/var/lib/pgadmin
     restart: unless-stopped
+    networks:
+      - internal
     depends_on:
       postgres:
         condition: service_healthy
@@ -81,6 +89,8 @@ services:
       RabbitMq__Host: ${RABBITMQ_HOST}
       RabbitMq__Username: ${RABBITMQ_USERNAME}
       RabbitMq__Password: ${RABBITMQ_PASSWORD}
+    networks:
+      - internal
     depends_on:
       weakapp:
         condition: service_healthy
@@ -102,6 +112,8 @@ services:
       RabbitMq__Password: ${RABBITMQ_PASSWORD}
       ConnectionStrings__Postgres: ${CONNECTIONSTRINGS_POSTGRES}
     restart: unless-stopped
+    networks:
+      - internal
     depends_on:
       rabbitmq:
         condition: service_healthy
@@ -119,7 +131,11 @@ services:
     environment:
       ASPNETCORE_URLS: http://+:8080
       ConnectionStrings__Postgres: ${CONNECTIONSTRINGS_POSTGRES}
+      Cors__AllowedOrigins: ${APIGATEWAY_CORS_ALLOWEDORIGINS}
     restart: unless-stopped
+    networks:
+      - internal
+      - public
     depends_on:
       postgres:
         condition: service_healthy
@@ -138,6 +154,9 @@ services:
       RabbitMq__Username: ${RABBITMQ_USERNAME}
       RabbitMq__Password: ${RABBITMQ_PASSWORD}
     restart: unless-stopped
+    networks:
+      - internal
+      - public
     depends_on:
       rabbitmq:
         condition: service_healthy
@@ -161,6 +180,13 @@ services:
         condition: service_started
       notificationservice:
         condition: service_started
+
+networks:
+  internal:
+    internal: true
+  public:
+    internal: false
+
 volumes:
   postgres-data:
   pgadmin-data:
