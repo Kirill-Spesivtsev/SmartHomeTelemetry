@@ -1,3 +1,4 @@
+using ApiGateway.Api.Configuration;
 using ApiGateway.Api.GraphQL;
 using ApiGateway.Application.Abstractions;
 using ApiGateway.Application.Services;
@@ -7,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.Configure<CorsOptions>(builder.Configuration.GetSection(CorsOptions.SectionName));
 
 builder.Host.UseSerilog((ctx, services, cfg) =>
 {
@@ -34,6 +37,14 @@ builder.Services
     .AddSorting()
     .AddProjections()
     .ModifyCostOptions(opt => opt.MaxTypeCost = 10000);
+builder.Services.AddCors(o =>
+{
+    var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string>() ?? "";
+    o.AddDefaultPolicy(p => p
+        .AllowAnyHeader()
+        .AllowAnyMethod()
+        .WithOrigins(allowedOrigins.Split(",")));
+});
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -53,6 +64,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 app.MapGraphQL("/graphql");
+app.UseCors();
 
 
 app.MapGet("/health", () => Results.Ok(new { status = "ok" }));

@@ -44,6 +44,15 @@ builder.Services.AddMassTransit(x =>
     });
 });
 
+builder.Services.AddCors(o =>
+{
+    o.AddDefaultPolicy(p => p
+        .AllowAnyHeader()
+        .AllowAnyMethod()
+        .AllowCredentials()
+        .SetIsOriginAllowed(_ => true));
+});
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -57,6 +66,8 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseCors();
 
 app.MapHub<TelemetryHub>(TelemetryHub.HubPath);
 
