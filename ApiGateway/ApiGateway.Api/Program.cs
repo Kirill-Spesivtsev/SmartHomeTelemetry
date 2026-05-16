@@ -62,8 +62,19 @@ app.UseSerilogRequestLogging();
 app.UseHttpsRedirection();
 app.UseAuthorization();
 
-app.MapControllers();
-app.MapGraphQL("/graphql");
+app.Use(async (context, next) =>
+{
+    using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(8));
+
+    var originalToken = context.RequestAborted;
+
+    context.RequestAborted = CancellationTokenSource
+        .CreateLinkedTokenSource(originalToken, cts.Token)
+        .Token;
+
+    await next();
+});
+
 app.UseCors();
 
 
