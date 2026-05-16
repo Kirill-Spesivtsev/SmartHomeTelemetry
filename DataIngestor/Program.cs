@@ -39,6 +39,7 @@ var retryPolicy = HttpPolicyExtensions
     .Or<TaskCanceledException>()
     .Or<JsonException>()
     .Or<HttpIOException>()
+    .Or<HttpRequestException>()
     .WaitAndRetryAsync(
         retryCount: 3,
         sleepDurationProvider: attempt => TimeSpan.FromMilliseconds(200 * attempt + jitter.Next(0, 250)));
