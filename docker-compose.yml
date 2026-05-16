@@ -142,6 +142,25 @@ services:
       rabbitmq:
         condition: service_healthy
 
+  frontend:
+    container_name: telemetry-dashboard
+    build:
+      context: ./Frontend/telemetry-dashboard
+      dockerfile: Dockerfile
+      no_cache: true
+      args:
+        REACT_APP_GRAPHQL_URL: ${REACT_APP_GRAPHQL_URL:-http://apigateway.api/graphql}
+        REACT_APP_SIGNALR_URL: ${REACT_APP_SIGNALR_URL:-http://notificationservice/hubs/telemetry}
+    ports:
+      - "3000:80"
+    networks:
+      - internal
+      - public
+    depends_on:
+      apigateway.api:
+        condition: service_started
+      notificationservice:
+        condition: service_started
 volumes:
   postgres-data:
   pgadmin-data:
