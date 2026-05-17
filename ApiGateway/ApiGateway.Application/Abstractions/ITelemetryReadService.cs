@@ -1,5 +1,6 @@
 
 using ApiGateway.Application.Dtos;
+using ApiGateway.Domain.Constants;
 using ApiGateway.Domain.Entities;
 
 namespace ApiGateway.Application.Services;
@@ -14,26 +15,13 @@ public interface ITelemetryReadService
 
     public IQueryable<AirQualityMetric> GetAirQualityMetrics();
 
-    public Task<IReadOnlyList<AirQualityMetricDto>> GetLatestAirQualityMetrics(
-        DateTime? fromUtc,
-        CancellationToken cancellationToken);
+    public IQueryable<AirQualityMetricDto> GetLatestAirQualityMetrics(DateTime? fromUtc);
 
-    public Task<IReadOnlyList<EnergyMetricDto>> GetLatestEnergyMetrics(
-        DateTime? fromUtc,
-        CancellationToken cancellationToken);
+    public IQueryable<EnergyMetricDto> GetLatestEnergyMetrics(DateTime? fromUtc);
 
-    public Task<IReadOnlyList<MotionMetricDto>> GetLatestMotionMetrics(
-        DateTime? fromUtc,
-        CancellationToken cancellationToken);
+    public IQueryable<MotionMetricDto> GetLatestMotionMetrics(DateTime? fromUtc);
 
+    public IQueryable<EnergyAggregateByLocation> GetEnergyAggregatesByLocation(DateTime? fromUtc, DateTime? toUtc);
 
-    public Task<IReadOnlyList<EnergyAggregateByLocation>> GetEnergyAggregatesByLocation(
-        DateTime? fromUtc,
-        DateTime? toUtc,
-        CancellationToken cancellationToken);
-
-    public Task<IReadOnlyList<AirQualityAggregateByLocation>> GetAirQualityAggregatesByLocation(
-        DateTime? fromUtc,
-        DateTime? toUtc,
-        CancellationToken cancellationToken);
+    public IQueryable<AirQualityAggregateByLocation> GetAirQualityAggregatesByLocation(DateTime? fromUtc, DateTime? toUtc);
 }
