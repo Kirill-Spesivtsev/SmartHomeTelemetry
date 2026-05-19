@@ -65,6 +65,7 @@ services:
         condition: service_healthy
 
   dataingestor:
+    container_name: data-ingestor
     image: ${DOCKER_REGISTRY-}dataingestor
     build:
       context: .
@@ -124,10 +125,22 @@ services:
         condition: service_healthy
 
   notificationservice:
+    container_name: notification-service
     image: ${DOCKER_REGISTRY-}notificationservice
     build:
       context: .
       dockerfile: NotificationService/Dockerfile
+    ports:
+      - "7001:8080"
+    environment:
+      ASPNETCORE_URLS: http://+:8080
+      RabbitMq__Host: ${RABBITMQ_HOST}
+      RabbitMq__Username: ${RABBITMQ_USERNAME}
+      RabbitMq__Password: ${RABBITMQ_PASSWORD}
+    restart: unless-stopped
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
 
 volumes:
   postgres-data:
