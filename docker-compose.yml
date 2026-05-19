@@ -108,10 +108,20 @@ services:
         condition: service_healthy
 
   apigateway.api:
+    container_name: api-gateway.api
     image: ${DOCKER_REGISTRY-}apigatewayapi
     build:
       context: .
       dockerfile: ApiGateway/ApiGateway.Api/Dockerfile
+    ports:
+      - "7000:8080"
+    environment:
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__Postgres: ${CONNECTIONSTRINGS_POSTGRES}
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
 
   notificationservice:
     image: ${DOCKER_REGISTRY-}notificationservice

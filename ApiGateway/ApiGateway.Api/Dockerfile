@@ -13,6 +13,11 @@ FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["ApiGateway/ApiGateway.Api/ApiGateway.Api.csproj", "ApiGateway/ApiGateway.Api/"]
+COPY ["ApiGateway/ApiGateway.Infrastructure/ApiGateway.Infrastructure.csproj", "ApiGateway.Infrastructure/"]
+COPY ["ApiGateway/ApiGateway.Application/ApiGateway.Application.csproj", "ApiGateway/ApiGateway.Application/"]
+COPY ["ApiGateway/ApiGateway.Domain/ApiGateway.Domain.csproj", "ApiGateway/ApiGateway.Domain/"]
+COPY ["DataProcessor/DataProcessor.Domain/DataProcessor.Domain.csproj", "DataProcessor/DataProcessor.Domain/"]
+COPY ["SmartHomeTelemetry.Shared/SmartHomeTelemetry.Shared.csproj", "SmartHomeTelemetry.Shared/"]
 RUN dotnet restore "./ApiGateway/ApiGateway.Api/ApiGateway.Api.csproj"
 COPY . .
 WORKDIR "/src/ApiGateway/ApiGateway.Api"
