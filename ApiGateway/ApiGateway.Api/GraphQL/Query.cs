@@ -3,6 +3,7 @@ using ApiGateway.Application.Dtos;
 using ApiGateway.Application.Services;
 using ApiGateway.Domain.Entities;
 using HotChocolate.CostAnalysis.Types;
+using Microsoft.EntityFrameworkCore;
 using Location = ApiGateway.Domain.Entities.Location;
 
 namespace ApiGateway.Api.GraphQL;
@@ -44,55 +45,58 @@ public class Query
 
     [Cost(10)]
     [ListSize(AssumedSize = 20, RequireOneSlicingArgument = false)]
-    public Task<IReadOnlyList<AirQualityMetricDto>> GetLatestAirQualityMetrics(
-        [Service] TelemetryReadService service, 
-        DateTime? fromUtc, 
-        CancellationToken cancellationToken) =>
-        service.GetLatestAirQualityMetrics(fromUtc, cancellationToken);
+    public async Task<List<AirQualityMetricDto>> GetLatestAirQualityMetrics(
+        [Service] TelemetryReadService service,
+        DateTime? fromUtc,
+        CancellationToken cancellationToken)
+    {
+        return await service.GetLatestAirQualityMetrics(fromUtc).ToListAsync(cancellationToken);
+
+    }
 
     [Cost(10)]
     [ListSize(AssumedSize = 20, RequireOneSlicingArgument = false)]
-    public Task<IReadOnlyList<EnergyMetricDto>> GetLatestEnergyMetrics(
+    public async Task<List<EnergyMetricDto>> GetLatestEnergyMetrics(
         [Service] TelemetryReadService service, 
         DateTime? fromUtc, 
         CancellationToken cancellationToken)
     {
-        return service.GetLatestEnergyMetrics(fromUtc, cancellationToken);
+        return await service.GetLatestEnergyMetrics(fromUtc).ToListAsync(cancellationToken);
     }
         
 
     [Cost(10)]
     [ListSize(AssumedSize = 20, RequireOneSlicingArgument = false)]
-    public Task<IReadOnlyList<MotionMetricDto>> GetLatestMotionMetrics(
+    public async Task<List<MotionMetricDto>> GetLatestMotionMetrics(
         [Service] TelemetryReadService service, 
         DateTime? fromUtc, 
         CancellationToken cancellationToken)
     {
-        return service.GetLatestMotionMetrics(fromUtc, cancellationToken);
+        return await service.GetLatestMotionMetrics(fromUtc).ToListAsync(cancellationToken);
     }
         
 
     [Cost(15)]
     [ListSize(AssumedSize = 20, RequireOneSlicingArgument = false)]
-    public Task<IReadOnlyList<EnergyAggregateByLocation>> GetEnergyAggregatesByLocation(
+    public async Task<List<EnergyAggregateByLocation>> GetEnergyAggregatesByLocation(
         [Service] TelemetryReadService service, 
         DateTime? fromUtc, 
         DateTime? toUtc,
         CancellationToken cancellationToken)
     {
-        return service.GetEnergyAggregatesByLocation(fromUtc, toUtc, cancellationToken);
+        return await service.GetEnergyAggregatesByLocation(fromUtc, toUtc).ToListAsync(cancellationToken);
     }
         
 
     [Cost(15)]
     [ListSize(AssumedSize = 20, RequireOneSlicingArgument = false)]
-    public Task<IReadOnlyList<AirQualityAggregateByLocation>> GetAirQualityAggregatesByLocation(
+    public async Task<List<AirQualityAggregateByLocation>> GetAirQualityAggregatesByLocation(
         [Service] TelemetryReadService service,
         DateTime? fromUtc,
         DateTime? toUtc,
         CancellationToken cancellationToken)
     {
-        return service.GetAirQualityAggregatesByLocation(fromUtc, toUtc, cancellationToken);
+        return await service.GetAirQualityAggregatesByLocation(fromUtc, toUtc).ToListAsync(cancellationToken);
     }
 
 }

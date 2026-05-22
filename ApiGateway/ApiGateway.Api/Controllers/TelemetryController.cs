@@ -43,10 +43,10 @@ public class TelemetryController : ControllerBase
     }
 
     [HttpGet("air-quality")]
-    public async Task<ActionResult<IReadOnlyList<AirQualityMetric>>> GetAirQualityMetrics(
+    public async Task<ActionResult<List<AirQualityMetric>>> GetAirQualityMetrics(
         CancellationToken cancellationToken)
     {
-        var result = await _service.GetAirQualityMetrics().ToListAsync(cancellationToken);
+        var result = _service.GetAirQualityMetrics().ToListAsync(cancellationToken);
         return Ok(result);
     }
 
@@ -55,7 +55,7 @@ public class TelemetryController : ControllerBase
         [FromQuery] DateTime? fromUtc,
         CancellationToken cancellationToken)
     {
-        var result = await _service.GetLatestAirQualityMetrics(fromUtc, cancellationToken);
+        var result = await _service.GetLatestAirQualityMetrics(fromUtc).ToListAsync();
         return Ok(result);
     }
 
@@ -64,7 +64,7 @@ public class TelemetryController : ControllerBase
         [FromQuery] DateTime? fromUtc,
         CancellationToken cancellationToken)
     {
-        var result = await _service.GetLatestEnergyMetrics(fromUtc, cancellationToken);
+        var result = await _service.GetLatestEnergyMetrics(fromUtc).ToListAsync();
         return Ok(result);
     }
 
@@ -73,7 +73,7 @@ public class TelemetryController : ControllerBase
         [FromQuery] DateTime? fromUtc,
         CancellationToken cancellationToken)
     {
-        var result = await _service.GetLatestMotionMetrics(fromUtc, cancellationToken);
+        var result = await _service.GetLatestMotionMetrics(fromUtc).ToListAsync();
         return Ok(result);
     }
 
@@ -83,7 +83,7 @@ public class TelemetryController : ControllerBase
         [FromQuery] DateTime? toUtc,
         CancellationToken cancellationToken)
     {
-        var result = await _service.GetEnergyAggregatesByLocation(fromUtc, toUtc, cancellationToken);
+        var result = await _service.GetEnergyAggregatesByLocation(fromUtc, toUtc).ToListAsync(cancellationToken);
         return Ok(result);
     }
 
@@ -93,7 +93,7 @@ public class TelemetryController : ControllerBase
         [FromQuery] DateTime? toUtc,
         CancellationToken cancellationToken)
     {
-        var result = await _service.GetAirQualityAggregatesByLocation(fromUtc, toUtc, cancellationToken);
+        var result = await _service.GetAirQualityAggregatesByLocation(fromUtc, toUtc).ToListAsync(cancellationToken);
         return Ok(result);
     }
 }

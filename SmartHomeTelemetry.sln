@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.3.11520.95 d18.3
+VisualStudioVersion = 18.3.11520.95
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataIngestor", "DataIngestor\DataIngestor.csproj", "{283C11BF-7E8D-47A5-88A0-F6DF42EDA2DA}"
 EndProject
@@ -31,13 +31,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{7AE07A97
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataProcessor.Tests", "Tests\DataProcessor.Tests\DataProcessor.Tests.csproj", "{D6758AB9-E562-4832-B291-B8E845436F22}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataIngestor.Tests", "Tests\DataIngestor.Tests\DataIngestor.Tests.csproj", "{5C35A159-832A-44DE-8237-BA290A75D57F}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiGateway.Tests", "Tests\ApiGateway.Tests\ApiGateway.Tests.csproj", "{97F7E420-A82D-44E8-9A12-8516310E8606}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotificationService.Tests", "Tests\NotificationService.Tests\NotificationService.Tests.csproj", "{30FC0075-B8E0-4914-A32B-4375AC75307C}"
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{81DDED9D-158B-E303-5F62-77A2896D2A5A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataIngestor.Tests", "Tests\DataIngestor.Tests\DataIngestor.Tests.csproj", "{E0510F2C-D8C3-419F-9992-35377820043F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -89,10 +89,6 @@ Global
 		{D6758AB9-E562-4832-B291-B8E845436F22}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D6758AB9-E562-4832-B291-B8E845436F22}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D6758AB9-E562-4832-B291-B8E845436F22}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5C35A159-832A-44DE-8237-BA290A75D57F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5C35A159-832A-44DE-8237-BA290A75D57F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5C35A159-832A-44DE-8237-BA290A75D57F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5C35A159-832A-44DE-8237-BA290A75D57F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{97F7E420-A82D-44E8-9A12-8516310E8606}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{97F7E420-A82D-44E8-9A12-8516310E8606}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{97F7E420-A82D-44E8-9A12-8516310E8606}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -105,6 +101,10 @@ Global
 		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E0510F2C-D8C3-419F-9992-35377820043F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E0510F2C-D8C3-419F-9992-35377820043F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E0510F2C-D8C3-419F-9992-35377820043F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E0510F2C-D8C3-419F-9992-35377820043F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -118,9 +118,9 @@ Global
 		{2FAC6CFF-841B-4317-90BD-C9A8A2DC2211} = {AC2AB79D-E8EF-4BFF-B777-8BF2A007724B}
 		{C820D3AD-3EE2-4173-9875-8A587FC98474} = {AC2AB79D-E8EF-4BFF-B777-8BF2A007724B}
 		{D6758AB9-E562-4832-B291-B8E845436F22} = {7AE07A97-CA40-4836-8945-923ABBF9B48D}
-		{5C35A159-832A-44DE-8237-BA290A75D57F} = {7AE07A97-CA40-4836-8945-923ABBF9B48D}
 		{97F7E420-A82D-44E8-9A12-8516310E8606} = {7AE07A97-CA40-4836-8945-923ABBF9B48D}
 		{30FC0075-B8E0-4914-A32B-4375AC75307C} = {7AE07A97-CA40-4836-8945-923ABBF9B48D}
+		{E0510F2C-D8C3-419F-9992-35377820043F} = {7AE07A97-CA40-4836-8945-923ABBF9B48D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C159A80B-4F73-41D7-A9FE-B3347D64B15A}

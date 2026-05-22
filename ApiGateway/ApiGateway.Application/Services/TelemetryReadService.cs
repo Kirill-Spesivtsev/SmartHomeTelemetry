@@ -32,9 +32,7 @@ public class TelemetryReadService : ITelemetryReadService
     public IQueryable<AirQualityMetric> GetAirQualityMetrics() =>
         _repository.GetAirQualityMetrics();
 
-    public async Task<IReadOnlyList<AirQualityMetricDto>> GetLatestAirQualityMetrics(
-        DateTime? fromUtc,
-        CancellationToken cancellationToken)
+    public IQueryable<AirQualityMetricDto> GetLatestAirQualityMetrics(DateTime? fromUtc)
     {
         var query = _repository.GetAirQualityMetrics()
         .Where(m =>
@@ -50,7 +48,7 @@ public class TelemetryReadService : ITelemetryReadService
             query = query.Where(m => m.CreatedAt >= fromUtc.Value);
         }
 
-        return await query
+        return query
             .OrderBy(m => m.Location!.Name)
             .Select(m => new AirQualityMetricDto(
                 m.LocationId,
@@ -59,13 +57,10 @@ public class TelemetryReadService : ITelemetryReadService
                 m.CreatedAt,
                 m.Co2,
                 m.Pm25,
-                m.Humidity))
-            .ToListAsync(cancellationToken);
+                m.Humidity));
     }
 
-    public async Task<IReadOnlyList<EnergyMetricDto>> GetLatestEnergyMetrics(
-        DateTime? fromUtc,
-        CancellationToken cancellationToken)
+    public IQueryable<EnergyMetricDto> GetLatestEnergyMetrics(DateTime? fromUtc)
     {
         var query = _repository.GetEnergyMetrics()
             .Where(m =>
@@ -80,20 +75,17 @@ public class TelemetryReadService : ITelemetryReadService
             query = query.Where(m => m.CreatedAt >= fromUtc.Value);
         }
 
-        return await query
+        return query
             .OrderBy(m => m.Location!.Name)
             .Select(m => new EnergyMetricDto(
                 m.LocationId,
                 m.Location!.Name,
                 MetricTypeNames.Energy,
                 m.CreatedAt,
-                m.Energy))
-            .ToListAsync(cancellationToken);
+                m.Energy));
     }
 
-    public async Task<IReadOnlyList<MotionMetricDto>> GetLatestMotionMetrics(
-        DateTime? fromUtc,
-        CancellationToken cancellationToken)
+    public IQueryable<MotionMetricDto> GetLatestMotionMetrics(DateTime? fromUtc)
     {
         var metrics = _repository.GetMotionMetrics();
 
@@ -110,22 +102,17 @@ public class TelemetryReadService : ITelemetryReadService
             query = query.Where(m => m.CreatedAt >= fromUtc.Value);
         }
 
-        return await query
+        return query
             .OrderBy(m => m.Location!.Name)
             .Select(m => new MotionMetricDto(
                 m.LocationId,
                 m.Location!.Name,
                 MetricTypeNames.Motion,
                 m.CreatedAt,
-                m.MotionDetected))
-            .ToListAsync(cancellationToken);
+                m.MotionDetected));
     }
 
-
-    public async Task<IReadOnlyList<EnergyAggregateByLocation>> GetEnergyAggregatesByLocation(
-        DateTime? fromUtc,
-        DateTime? toUtc,
-        CancellationToken cancellationToken)
+    public IQueryable<EnergyAggregateByLocation> GetEnergyAggregatesByLocation(DateTime? fromUtc, DateTime? toUtc)
     {
         var from = (fromUtc ?? DateTime.UtcNow.AddHours(-24)).ToUniversalTime();
         var to = toUtc?.ToUniversalTime();
@@ -134,7 +121,7 @@ public class TelemetryReadService : ITelemetryReadService
         if (to.HasValue)
             filtered = filtered.Where(m => m.CreatedAt <= to.Value);
 
-        var query = filtered
+        return filtered
             .GroupBy(x => new
             {
                 x.LocationId,
@@ -149,14 +136,9 @@ public class TelemetryReadService : ITelemetryReadService
                 MinEnergy = g.Min(x => x.Energy),
                 MaxEnergy = g.Max(x => x.Energy)
             });
-
-        return await query.ToListAsync(cancellationToken);
     }
 
-    public async Task<IReadOnlyList<AirQualityAggregateByLocation>> GetAirQualityAggregatesByLocation(
-        DateTime? fromUtc,
-        DateTime? toUtc,
-        CancellationToken cancellationToken)
+    public IQueryable<AirQualityAggregateByLocation> GetAirQualityAggregatesByLocation(DateTime? fromUtc, DateTime? toUtc)
     {
         var from = (fromUtc ?? DateTime.UtcNow.AddHours(-24)).ToUniversalTime();
         var to = toUtc?.ToUniversalTime();
@@ -165,7 +147,7 @@ public class TelemetryReadService : ITelemetryReadService
         if (to.HasValue)
             filtered = filtered.Where(m => m.CreatedAt <= to.Value);
 
-        var query = filtered
+        return filtered
             .GroupBy(x => new
             {
                 x.LocationId,
@@ -186,8 +168,6 @@ public class TelemetryReadService : ITelemetryReadService
                 MinHumidity = g.Min(x => x.Humidity),
                 MaxHumidity = g.Max(x => x.Humidity),
             });
-
-        return await query.ToListAsync(cancellationToken);
     }
 
 }
