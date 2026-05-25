@@ -3,9 +3,7 @@ name: smart-home-telemetry
 services:
   weakapp:
     container_name: weak-app
-    build:
-      context: ./WeakApp
-      dockerfile: Dockerfile
+    image: ghcr.io/kirill-spesivtsev/sht-weak-app:latest
     ports:
       - "5000:8080"
     networks:
@@ -16,7 +14,7 @@ services:
       timeout: 5s
       retries: 5
 
-  rabbitmq: 
+  rabbitmq:
     container_name: rabbitmq
     image: rabbitmq:3-management
     ports:
@@ -74,10 +72,7 @@ services:
 
   dataingestor:
     container_name: data-ingestor
-    image: ${DOCKER_REGISTRY-}dataingestor
-    build:
-      context: .
-      dockerfile: DataIngestor/Dockerfile
+    image: ghcr.io/kirill-spesivtsev/sht-data-ingestor:latest
     ports:
       - "7003:8080"
     environment:
@@ -99,10 +94,7 @@ services:
 
   dataprocessor.api:
     container_name: data-processor
-    image: ${DOCKER_REGISTRY-}dataprocessorapi
-    build:
-      context: .
-      dockerfile: DataProcessor/DataProcessor.Api/Dockerfile
+    image: ghcr.io/kirill-spesivtsev/sht-data-processor:latest
     ports:
       - "7002:8080"
     environment:
@@ -122,10 +114,7 @@ services:
 
   apigateway.api:
     container_name: api-gateway.api
-    image: ${DOCKER_REGISTRY-}apigatewayapi
-    build:
-      context: .
-      dockerfile: ApiGateway/ApiGateway.Api/Dockerfile
+    image: ghcr.io/kirill-spesivtsev/sht-api-gateway:latest
     ports:
       - "7000:8080"
     environment:
@@ -142,10 +131,7 @@ services:
 
   notificationservice:
     container_name: notification-service
-    image: ${DOCKER_REGISTRY-}notificationservice
-    build:
-      context: .
-      dockerfile: NotificationService/Dockerfile
+    image: ghcr.io/kirill-spesivtsev/sht-notification-service:latest
     ports:
       - "7001:8080"
     environment:
@@ -161,25 +147,19 @@ services:
       rabbitmq:
         condition: service_healthy
 
-  # frontend:
-  #   container_name: telemetry-dashboard
-  #   build:
-  #     context: ./Frontend/telemetry-dashboard
-  #     dockerfile: Dockerfile
-  #     no_cache: true
-  #     args:
-  #       REACT_APP_GRAPHQL_URL: ${REACT_APP_GRAPHQL_URL:-http://apigateway.api/graphql}
-  #       REACT_APP_SIGNALR_URL: ${REACT_APP_SIGNALR_URL:-http://notificationservice/hubs/telemetry}
-  #   ports:
-  #     - "3000:80"
-  #   networks:
-  #     - internal
-  #     - public
-  #   depends_on:
-  #     apigateway.api:
-  #       condition: service_started
-  #     notificationservice:
-  #       condition: service_started
+  frontend:
+    container_name: telemetry-dashboard
+    image: ghcr.io/kirill-spesivtsev/sht-frontend:latest
+    ports:
+      - "3000:80"
+    networks:
+      - internal
+      - public
+    depends_on:
+      apigateway.api:
+        condition: service_started
+      notificationservice:
+        condition: service_started
 
 networks:
   internal:
