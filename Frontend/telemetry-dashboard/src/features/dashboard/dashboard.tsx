@@ -267,7 +267,7 @@ export default function Dashboard() {
     }, 1000);
 
     return () => clearTimeout(timeout);
-  }, [realtime.lastEvent, fromUtc]);
+  }, [realtime.lastEvent, fromUtc, latestAir, latestEnergy, latestMotion, energyMetrics, motionMetrics, airQualityMetrics, aggEnergy, aggAir, airWindow, energyWindow]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-950 to-slate-900 text-slate-100">
