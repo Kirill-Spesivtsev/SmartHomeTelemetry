@@ -103,7 +103,7 @@ jobs:
         include:
           - service: weak-app
             context: WeakApp
-            dockerfile: WeakApp/Dockerfile
+            dockerfile: Dockerfile
 
           - service: data-ingestor
             context: .
