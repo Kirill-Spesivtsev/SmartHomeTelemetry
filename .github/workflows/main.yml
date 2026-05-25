@@ -102,7 +102,7 @@ jobs:
       matrix:
         include:
           - service: weak-app
-            context: .
+            context: WeakApp
             dockerfile: WeakApp/Dockerfile
 
           - service: data-ingestor
