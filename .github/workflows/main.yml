@@ -102,23 +102,23 @@ jobs:
       matrix:
         include:
           - service: weak-app
-            context: WeakApp
+            context: .
             dockerfile: WeakApp/Dockerfile
 
           - service: data-ingestor
-            context: DataIngestor
+            context: .
             dockerfile: DataIngestor/Dockerfile
 
           - service: data-processor
-            context: DataProcessor
+            context: .
             dockerfile: DataProcessor/DataProcessor.Api/Dockerfile
 
           - service: api-gateway
-            context: ApiGateway
+            context: .
             dockerfile: ApiGateway/ApiGateway.Api/Dockerfile
 
           - service: notification-service
-            context: NotificationService
+            context: .
             dockerfile: NotificationService/Dockerfile
 
     steps:
